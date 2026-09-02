@@ -1,0 +1,972 @@
+/* กำหนดค่าตัวแปรของระบบสีและ Font */
+:root {
+    --bg-color: #0b0f19;
+    --card-bg: rgba(255, 255, 255, 0.06);
+    --card-border: rgba(255, 255, 255, 0.1);
+    --text-primary: #f3f4f6;
+    --text-secondary: #9ca3af;
+    --primary-color: #6366f1;
+    --income-color: #10b981;
+    --expense-color: #f43f5e;
+    --transittion: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Reset Styles พื้นฐาน */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Sarabun', 'Plus Jakarta Sans', sans-serif;
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--text-primary);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 2rem 1rem;
+    overflow-x: hidden;
+    position: relative;
+}
+
+/* วงกลมสีสันเรืองแสงด้านหลัง (Background Decor) */
+.background-decor {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    overflow: hidden;
+}
+
+.circle {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(100px);
+    opacity: 0.4;
+    animation: float 10s ease-in-out infinite alternate;
+}
+
+.circle-1 {
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(circle, var(--primary-color) 0%, rgba(0, 0, 0, 0) 70%);
+    top: -100px;
+    right: -100px;
+}
+
+.circle-2 {
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, #ec4899 0%, rgba(0, 0, 0, 0) 70%);
+    /* ชมพู */
+    bottom: -150px;
+    left: -150px;
+    animation-delay: 2s;
+}
+
+@keyframes float {
+    0% {
+        transform: translateY(0) scale(1);
+    }
+
+    100% {
+        transform: translateY(30px) scale(1.1);
+    }
+}
+
+/* Container ควบคุมขนาดหน้าจอ */
+.container {
+    width: 100%;
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
+/* ส่วนหัวข้อ (Header) */
+header {
+    text-align: center;
+    margin-bottom: 2.5rem;
+}
+
+header h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, #fff 0%, #a5b4fc 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+}
+
+header p {
+    color: var(--text-secondary);
+    margin-top: 0.5rem;
+    font-size: 1rem;
+    letter-spacing: 0.5px;
+}
+
+/* สไลด์การ์ด Glassmorphism (Core Element) */
+.card {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-radius: 20px;
+    padding: 1.8rem;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+    transition: var(--transittion);
+}
+
+.card:hover {
+    border-color: rgba(255, 255, 255, 0.2);
+    box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.4);
+}
+
+/* Dashboard แสดงยอดเงิน */
+.dashboard {
+    margin-bottom: 2rem;
+}
+
+.card-balance {
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.15) 0%, rgba(255, 255, 255, 0.03) 100%);
+    border-color: rgba(99, 102, 241, 0.3);
+    text-align: center;
+    margin-bottom: 1.2rem;
+    padding: 2rem;
+}
+
+.card-balance h3 {
+    font-size: 0.95rem;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin-bottom: 0.5rem;
+}
+
+.card-balance h1 {
+    font-size: 3rem;
+    font-weight: 700;
+    color: #ffffff;
+    text-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+}
+
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.2rem;
+}
+
+.card-income {
+    border-left: 5px solid var(--income-color);
+}
+
+.card-income h2 {
+    color: var(--income-color);
+}
+
+.card-expense {
+    border-left: 5px solid var(--expense-color);
+}
+
+.card-expense h2 {
+    color: var(--expense-color);
+}
+
+.dashboard-grid h3 {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 0.5rem;
+}
+
+.dashboard-grid h2 {
+    font-size: 1.8rem;
+    font-weight: 600;
+}
+
+/* App Body: แบ่ง 2 คอลัมน์เท่ากัน 50/50 พอดีเนื้อหา */
+.app-body {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    align-items: start;
+}
+
+@media (max-width: 900px) {
+    .app-body {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ฟอร์มและอินพุต */
+.form-section h2,
+.chart-container h2,
+.history-container h2 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.form-control {
+    margin-bottom: 1.2rem;
+}
+
+.form-control label {
+    display: block;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    margin-bottom: 0.5rem;
+}
+
+/* กล่องกรอกข้อมูล */
+input[type="text"],
+input[type="number"],
+select {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    padding: 0.8rem 1rem;
+    color: var(--text-primary);
+    font-size: 0.95rem;
+    outline: none;
+    transition: var(--transittion);
+}
+
+/* แก้ไขสีตัวอักษรของตัวเลือกให้เป็นสีดำ เพื่อให้อ่านง่ายบนพื้นหลังสีขาวของ Dropdown */
+select option {
+    color: #111827;
+    background-color: #ffffff;
+}
+
+input[type="text"]:focus,
+input[type="number"]:focus,
+select:focus {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: var(--primary-color);
+    box-shadow: 0 0 10px rgba(99, 102, 241, 0.3);
+}
+
+/* ตัวเลือกประเภทแบบปุ่มกด (Radio Button) */
+.type-selector {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    background: rgba(0, 0, 0, 0.2);
+    padding: 4px;
+    border-radius: 14px;
+    border: 1px solid var(--card-border);
+}
+
+.type-selector input[type="radio"] {
+    display: none;
+}
+
+.btn-type {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    padding: 0.6rem;
+    border-radius: 500px;
+    cursor: pointer;
+    font-weight: 500;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    transition: var(--transittion);
+}
+
+/* รองรับทั้งตัวสแกด label และ lable ที่พิมพ์ใน HTML */
+.type-selector input[type="radio"]#type-income:checked+.income-label,
+.type-selector input[type="radio"]#type-income:checked+.income-lable {
+    background: var(--income-color);
+    color: #ffffff;
+    box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
+}
+
+.type-selector input[type="radio"]#type-expense:checked+.expense-label,
+.type-selector input[type="radio"]#type-expense:checked+.expense-lable {
+    background: var(--expense-color);
+    color: #ffffff;
+    box-shadow: 0 4px 15px rgba(244, 63, 94, 0.4);
+}
+
+/* ปุ่มกดบันทึกรายการ */
+.btn-submit {
+    width: 100%;
+    background: linear-gradient(135deg, var(--primary-color) 0%, #4f46e5 100%);
+    color: #ffffff;
+    border: none;
+    border-radius: 12px;
+    padding: 0.9rem;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
+    transition: var(--transittion);
+}
+
+.btn-submit:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(99, 102, 241, 0.6);
+}
+
+.btn-submit:active {
+    transform: translateY(0);
+}
+
+/* ฝั่งขวา: display Section */
+.display-section {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+/* ส่วนของกราฟ */
+.chart-wrapper {
+    position: relative;
+    width: 100%;
+    max-height: 250px;
+    display: flex;
+    justify-content: center;
+}
+
+/* ประวัติรายการ (List) */
+/* ประวัติรายการ (List) */
+.history-container {
+    display: flex;
+    flex-direction: column;
+}
+
+.history-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.2rem;
+    gap: 8px;
+    flex-wrap: nowrap;
+}
+
+.history-header h2 {
+    font-size: 1.1rem;
+    white-space: nowrap;
+    margin-bottom: 0;
+    flex-shrink: 0;
+}
+
+.history-controls {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: nowrap;
+    flex-shrink: 0;
+}
+
+.history-controls select,
+.select-month,
+.select-wallet {
+    width: auto !important;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid var(--card-border);
+    color: var(--text-primary);
+    padding: 0.4rem 1.6rem 0.4rem 0.6rem;
+    border-radius: 8px;
+    font-size: 0.78rem;
+    cursor: pointer;
+    outline: none;
+    transition: var(--transittion);
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml;utf8,<svg fill='white' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/><path d='M0 0h24v24H0z' fill='none'/></svg>");
+    background-repeat: no-repeat;
+    background-position: right 4px center;
+    background-size: 14px;
+    white-space: nowrap;
+}
+
+.select-month:focus,
+.select-wallet:focus {
+    background-color: rgba(255, 255, 255, 0.12);
+    border-color: var(--primary-color);
+    box-shadow: 0 0 8px rgba(99, 102, 241, 0.3);
+}
+
+.btn-export {
+    width: auto !important;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid var(--card-border);
+    color: var(--text-primary);
+    padding: 0.4rem 0.7rem;
+    border-radius: 8px;
+    font-size: 0.78rem;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    transition: var(--transittion);
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.btn-export:hover {
+    background: rgba(255, 255, 255, 0.12);
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+.transaction-list {
+    list-style: none;
+    max-height: 390px;
+    overflow-y: auto;
+    padding-right: 5px;
+}
+
+/* Custom Scrollbar สำหรับรายการประวัติ */
+.transaction-list::-webkit-scrollbar {
+    width: 6px;
+}
+
+.transaction-list::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+}
+
+.transaction-list::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 10px;
+}
+
+.transaction-list::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+/* รายการบันทึกแต่ละวัน (Item) */
+.transaction-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.7rem 1rem;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    margin-bottom: 0.55rem;
+    transition: var(--transittion);
+    animation: slideIn 0.3s ease;
+}
+
+.transaction-item:hover {
+    background: rgba(255, 255, 255, 0.07);
+    transform: translateX(4px);
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.transaction-item.income {
+    border-left: 4px solid var(--income-color);
+}
+
+.transaction-item.expense {
+    border-left: 4px solid var(--expense-color);
+}
+
+.item-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.item-desc {
+    font-weight: 500;
+    font-size: 0.95rem;
+}
+
+.item-cat {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    background: rgba(255, 255, 255, 0.05);
+    padding: 2px 8px;
+    border-radius: 20px;
+    width: fit-content;
+}
+
+.item-right {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.item-amount {
+    font-weight: 600;
+    font-size: 1rem;
+}
+
+.income .item-amount {
+    color: var(--income-color);
+}
+
+.expense .item-amount {
+    color: var(--expense-color);
+}
+
+/* ปุ่มกดลบรายการ */
+.btn-delete {
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    padding: 5px;
+    border-radius: 5px;
+    transition: var(--transittion);
+}
+
+.btn-delete:hover {
+    color: var(--expense-color);
+    background: rgba(244, 63, 94, 0.1);
+}
+
+/* Responsive สำหรับหน้าจอมือถือ */
+@media (max-width: 768px) {
+    body {
+        padding: 1rem 0.5rem;
+    }
+
+    header h1 {
+        font-size: 2rem;
+    }
+
+    .app-body {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .card-balance h1 {
+        font-size: 2.2rem;
+    }
+}
+
+.wallet-summary-grid-5 {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+@media (max-width: 1200px) {
+    .wallet-summary-grid-5 {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .wallet-summary-grid-5 {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 480px) {
+    .wallet-summary-grid-5 {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* การ์ดบัญชีเงินเก็บ (Savings) */
+.card-wallet-savings {
+    border-left: 4px solid #f59e0b;
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.12) 0%, rgba(255, 255, 255, 0.05) 100%);
+}
+
+.card-wallet-savings h3 i {
+    color: #fbbf24;
+}
+
+/* การ์ดบัญชีใช้จ่าย (Spending) */
+.card-wallet-spending {
+    border-left: 4px solid #6366f1;
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.12) 0%, rgba(255, 255, 255, 0.05) 100%);
+}
+
+.card-wallet-spending h3 i {
+    color: #818cf8;
+}
+
+/* การ์ดเงินสำรอง / รายได้คงเหลือ (Reserve) */
+.card-wallet-reserve {
+    border-left: 4px solid #10b981;
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.12) 0%, rgba(255, 255, 255, 0.05) 100%);
+}
+
+.card-wallet-reserve h3 i {
+    color: #34d399;
+}
+
+/* การ์ด G-Wallet (เป๋าตัง - เงินเติม) */
+.card-wallet-gwallet {
+    border-left: 4px solid #06b6d4;
+    background: linear-gradient(135deg, rgba(6, 182, 212, 0.12) 0%, rgba(255, 255, 255, 0.05) 100%);
+}
+
+.card-wallet-gwallet h3 i {
+    color: #22d3ee;
+}
+
+/* การ์ดสิทธิ์รัฐ (ไทยช่วยไทย) */
+.card-wallet-grant {
+    border-left: 4px solid #0ea5e9;
+    background: linear-gradient(135deg, rgba(14, 165, 233, 0.12) 0%, rgba(255, 255, 255, 0.05) 100%);
+}
+
+.card-wallet-grant h3 i {
+    color: #38bdf8;
+}
+
+/* ปุ่มระบุยอดเงินเก็บ */
+.btn-savings-small {
+    background: linear-gradient(135deg, #d97706 0%, #f59e0b 100%);
+    color: #fff;
+    border: none;
+    border-radius: 20px;
+    padding: 3px 9px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    transition: var(--transittion);
+}
+
+.btn-savings-small:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(245, 158, 11, 0.4);
+}
+
+/* ปุ่มระบุงบเข้าบัญชีใช้จ่าย */
+.btn-allocate-small {
+    background: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%);
+    color: #fff;
+    border: none;
+    border-radius: 20px;
+    padding: 3px 9px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    transition: var(--transittion);
+}
+
+.btn-allocate-small:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+}
+
+/* ปุ่มเติมเงิน G-Wallet */
+.btn-topup-small {
+    background: linear-gradient(135deg, #0891b2 0%, #06b6d4 100%);
+    color: #fff;
+    border: none;
+    border-radius: 20px;
+    padding: 3px 9px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    transition: var(--transittion);
+}
+
+.btn-topup-small:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(6, 182, 212, 0.4);
+}
+
+/* ตัวเลือกกระเป๋าเงินในฟอร์ม */
+.wallet-selector {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-top: 6px;
+}
+
+.wallet-selector-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.wallet-selector-3 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+}
+
+@media (max-width: 600px) {
+    .wallet-selector-3 {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 480px) {
+    .wallet-selector-2 {
+        grid-template-columns: 1fr;
+    }
+}
+
+.wallet-selector input[type="radio"] {
+    display: none;
+}
+
+.btn-wallet {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 9px 8px;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--card-border);
+    color: var(--text-secondary);
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: 500;
+    transition: var(--transittion);
+}
+
+.btn-wallet:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+#wallet-spending:checked+.wallet-spending-label {
+    background: rgba(99, 102, 241, 0.2);
+    border-color: #6366f1;
+    color: #a5b4fc;
+}
+
+#wallet-reserve:checked+.wallet-reserve-label {
+    background: rgba(16, 185, 129, 0.2);
+    border-color: #10b981;
+    color: #34d399;
+}
+
+#wallet-savings:checked+.wallet-savings-label {
+    background: rgba(245, 158, 11, 0.2);
+    border-color: #f59e0b;
+    color: #fbbf24;
+}
+
+#wallet-gwallet:checked+.wallet-gwallet-label {
+    background: rgba(6, 182, 212, 0.22);
+    border-color: #06b6d4;
+    color: #67e8f9;
+}
+
+#wallet-copay:checked + .wallet-copay-label {
+    background: rgba(16, 185, 129, 0.2);
+    border-color: #10b981;
+    color: #6ee7b7;
+}
+
+/* ปุ่มรับสิทธิ์ 1,000 บาท */
+.btn-claim-small {
+    background: linear-gradient(135deg, #0284c7 0%, #0ea5e9 100%);
+    color: #fff;
+    border: none;
+    border-radius: 20px;
+    padding: 3px 9px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    transition: var(--transittion);
+}
+
+.btn-claim-small:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(14, 165, 233, 0.4);
+}
+
+/* หลอดโควตารายวัน 200 บาท */
+.quota-progress-container {
+    margin-top: 10px;
+    padding-top: 8px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.quota-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.78rem;
+    color: var(--text-secondary);
+    margin-bottom: 5px;
+}
+
+.quota-label strong {
+    color: #38bdf8;
+}
+
+.quota-bar {
+    width: 100%;
+    height: 6px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.quota-progress {
+    height: 100%;
+    background: linear-gradient(90deg, #0ea5e9, #38bdf8);
+    border-radius: 10px;
+    transition: width 0.4s ease;
+}
+
+/* กล่องคำนวณสิทธิ์ 60/40 */
+.copay-breakdown-box {
+    background: rgba(14, 165, 233, 0.08);
+    border: 1px dashed rgba(14, 165, 233, 0.4);
+    border-radius: 12px;
+    padding: 12px 14px;
+    margin: 10px 0;
+    animation: fadeIn 0.3s ease;
+}
+
+.copay-header {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #38bdf8;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.copay-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 6px;
+}
+
+.copay-item {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 8px 10px;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+}
+
+.copay-item .label {
+    font-size: 0.72rem;
+    color: var(--text-secondary);
+}
+
+.copay-item strong {
+    font-size: 1.05rem;
+    margin-top: 2px;
+}
+
+.copay-item.paotang-part strong {
+    color: #38bdf8;
+}
+
+.copay-item.user-part strong {
+    color: #67e8f9;
+}
+
+.copay-note {
+    font-size: 0.72rem;
+    color: var(--text-secondary);
+    display: block;
+}
+
+/* ป้ายแสดงกระเป๋าในรายการประวัติ */
+.item-wallet-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.75rem;
+    padding: 2px 8px;
+    border-radius: 6px;
+    margin-left: 8px;
+}
+
+.item-wallet-badge.income {
+    background: rgba(16, 185, 129, 0.18);
+    color: #34d399;
+    border: 1px solid rgba(16, 185, 129, 0.35);
+}
+
+.item-wallet-badge.spending {
+    background: rgba(99, 102, 241, 0.15);
+    color: #a5b4fc;
+    border: 1px solid rgba(99, 102, 241, 0.3);
+}
+
+.item-wallet-badge.reserve {
+    background: rgba(16, 185, 129, 0.18);
+    color: #34d399;
+    border: 1px solid rgba(16, 185, 129, 0.35);
+}
+
+.item-wallet-badge.savings {
+    background: rgba(245, 158, 11, 0.15);
+    color: #fbbf24;
+    border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
+.item-wallet-badge.gwallet {
+    background: rgba(6, 182, 212, 0.18);
+    color: #67e8f9;
+    border: 1px solid rgba(6, 182, 212, 0.35);
+}
+
+.item-wallet-badge.grant {
+    background: rgba(14, 165, 233, 0.18);
+    color: #38bdf8;
+    border: 1px solid rgba(14, 165, 233, 0.35);
+}
+
+.item-wallet-badge.copay {
+    background: rgba(16, 185, 129, 0.15);
+    color: #6ee7b7;
+    border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.select-wallet option {
+    background: #1e293b;
+    color: #fff;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-5px); }
+    to { opacity: 1; transform: translateY(0); }
+}
