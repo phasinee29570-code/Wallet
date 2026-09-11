@@ -197,6 +197,15 @@
                     <div class="history-header">
                         <h2><i class="fa-solid fa-clock-rotate-left"></i>ประวัติรายการ</h2>
                         <div class="history-controls">
+                            <!-- ปุ่มสลับมุมมอง List / Calendar -->
+                            <div class="view-toggle-group">
+                                <button type="button" id="btn-view-list" class="btn-view-toggle active" title="มุมมองรายการ">
+                                    <i class="fa-solid fa-list-ul"></i> รายการ
+                                </button>
+                                <button type="button" id="btn-view-calendar" class="btn-view-toggle" title="มุมมองปฏิทิน">
+                                    <i class="fa-regular fa-calendar-days"></i> ปฏิทิน
+                                </button>
+                            </div>
                             <select id="month-filter" class="select-month">
                                 <!-- ตัวเลือกเดือนจะถูกสร้างอัตโนมัติจาก JS -->
                             </select>
@@ -212,9 +221,34 @@
                                     class="fa-solid fa-file-excel"></i>Export</button>
                         </div>
                     </div>
+                    <!-- มุมมอง 1: รายการประวัติแบบ List -->
                     <ul id="transaction-list" class="transaction-list">
                         <!-- รายการจะถูกเพิ่มเข้ามาผ่าน JavaScript -->
                     </ul>
+
+                    <!-- มุมมอง 2: ปฏิทินรายเดือน Calendar View -->
+                    <div id="calendar-view" class="calendar-view" style="display: none;">
+                        <div class="calendar-weekdays">
+                            <div>อา.</div>
+                            <div>จ.</div>
+                            <div>อ.</div>
+                            <div>พ.</div>
+                            <div>พฤ.</div>
+                            <div>ศ.</div>
+                            <div>ส.</div>
+                        </div>
+                        <div id="calendar-grid" class="calendar-grid">
+                            <!-- วันที่และยอดรวมจะถูกสร้างผ่าน JavaScript -->
+                        </div>
+                        <!-- กล่องแสดงรายการของวันที่เลือกในปฏิทิน -->
+                        <div id="calendar-day-details" class="calendar-day-details" style="display: none;">
+                            <div class="day-details-header">
+                                <h4 id="selected-day-title"><i class="fa-regular fa-calendar-check"></i> รายการของวันที่</h4>
+                                <button id="btn-close-day-details" class="btn-close-details"><i class="fa-solid fa-xmark"></i></button>
+                            </div>
+                            <ul id="calendar-day-list" class="transaction-list day-sublist"></ul>
+                        </div>
+                    </div>
                 </div>
             </aside>
         </div>

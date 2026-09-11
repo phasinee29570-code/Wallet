@@ -630,10 +630,185 @@ function exportToCSV() {
     document.body.removeChild(link);
 }
 
-// 20. ฟังก์ชันเริ่มต้นรันโปรแกรม
+// 20. ฟังก์ชันเรนเดอร์มุมมองปฏิทิน (Calendar View)
+const btnViewList = document.getElementById('btn-view-list');
+const btnViewCalendar = document.getElementById('btn-view-calendar');
+const calendarViewEl = document.getElementById('calendar-view');
+const calendarGridEl = document.getElementById('calendar-grid');
+const calendarDayDetailsEl = document.getElementById('calendar-day-details');
+const calendarDayListEl = document.getElementById('calendar-day-list');
+const selectedDayTitleEl = document.getElementById('selected-day-title');
+const btnCloseDayDetails = document.getElementById('btn-close-day-details');
+
+let currentViewMode = 'list'; // 'list' หรือ 'calendar'
+let selectedCalendarDay = null;
+
+function renderCalendarView() {
+    if (!calendarGridEl) return;
+    calendarGridEl.innerHTML = '';
+
+    const [yearStr, monthStr] = selectedMonthKey.split('-');
+    const year = parseInt(yearStr);
+    const month = parseInt(monthStr) - 1; // 0-indexed
+
+    const firstDayIndex = new Date(year, month, 1).getDay();
+    const totalDaysInMonth = new Date(year, month + 1, 0).getDate();
+
+    // กรอง transactions เฉพาะเดือนและกระเป๋าที่เลือก
+    const monthTransactions = transactions.filter(t => {
+        const matchMonth = getMonthKey(t) === selectedMonthKey;
+        const currentW = normalizeWallet(t);
+        const matchWallet = selectedWallet === 'all' || currentW === selectedWallet;
+        return matchMonth && matchWallet;
+    });
+
+    // วาดช่องว่างก่อนวันที่ 1
+    for (let i = 0; i < firstDayIndex; i++) {
+        const emptyCell = document.createElement('div');
+        emptyCell.className = 'calendar-cell empty';
+        calendarGridEl.appendChild(emptyCell);
+    }
+
+    // วาดแต่ละวันในเดือน
+    for (let day = 1; day <= totalDaysInMonth; day++) {
+        const cell = document.createElement('div');
+        cell.className = 'calendar-cell';
+
+        // คำนวณวันที่ในรูปแบบสตริงเพื่อเปรียบเทียบ (เช่น "11/9/2569" หรือ "11/09/2569")
+        const thaiYear = year + 543;
+        const targetDatePrefix1 = `${day}/${month + 1}/${thaiYear}`;
+        const targetDatePrefix2 = `${String(day).padStart(2, '0')}/${String(month + 1).padStart(2, '0')}/${thaiYear}`;
+
+        // เช็คว่าใช่วันนี้หรือไม่
+        const isToday = now.getDate() === day && now.getMonth() === month && now.getFullYear() === year;
+        if (isToday) cell.classList.add('today');
+
+        // กรองรายการของวันนี้
+        const dayTransactions = monthTransactions.filter(t => {
+            if (!t.date) return false;
+            return t.date.startsWith(targetDatePrefix1) || t.date.startsWith(targetDatePrefix2);
+        });
+
+        // คำนวณรายรับและรายจ่ายของวันนี้
+        const internalTransfers = ['topup_gwallet', 'transfer_savings', 'paotang_grant', 'allocate_spending'];
+        const dayIncome = dayTransactions
+            .filter(t => t.type === 'income' && !internalTransfers.includes(t.category))
+            .reduce((acc, t) => acc + t.amount, 0);
+
+        const dayExpense = dayTransactions
+            .filter(t => t.type === 'expense' && t.category !== 'topup_gwallet' && t.category !== 'transfer_savings')
+            .reduce((acc, t) => acc + t.amount, 0);
+
+        let amountsHtml = '';
+        if (dayIncome > 0 || dayExpense > 0) {
+            amountsHtml = `<div class="day-amounts">
+                ${dayIncome > 0 ? `<span class="day-amt-income">+${formatMoey(dayIncome).replace('฿', '')}</span>` : ''}
+                ${dayExpense > 0 ? `<span class="day-amt-expense">-${formatMoey(dayExpense).replace('฿', '')}</span>` : ''}
+            </div>`;
+        }
+
+        cell.innerHTML = `
+            <span class="day-number">${day}</span>
+            ${amountsHtml}
+        `;
+
+        if (selectedCalendarDay === day) {
+            cell.classList.add('active-day');
+        }
+
+        // เมื่อคลิกวันที่ในปฏิทิน
+        cell.addEventListener('click', () => {
+            document.querySelectorAll('.calendar-cell').forEach(c => c.classList.remove('active-day'));
+            cell.classList.add('active-day');
+            selectedCalendarDay = day;
+            showDayDetails(day, targetDatePrefix1, dayTransactions);
+        });
+
+        calendarGridEl.appendChild(cell);
+    }
+}
+
+// ฟังก์ชันแสดงรายละเอียดรายการของวันที่กดเลือก
+function showDayDetails(day, dateStr, dayTransactions) {
+    if (!calendarDayDetailsEl || !selectedDayTitleEl || !calendarDayListEl) return;
+
+    calendarDayDetailsEl.style.display = 'block';
+    selectedDayTitleEl.innerHTML = `<i class="fa-regular fa-calendar-check"></i> รายการวันที่ ${day} ${formatMonthKeyThai(selectedMonthKey)}`;
+    calendarDayListEl.innerHTML = '';
+
+    if (dayTransactions.length === 0) {
+        calendarDayListEl.innerHTML = `<li style="text-align: center; color: var(--text-secondary); padding: 10px; font-size: 0.85rem;">ไม่มีรายการในวันนี้</li>`;
+        return;
+    }
+
+    dayTransactions.forEach(t => {
+        const item = document.createElement('li');
+        item.classList.add('transaction-item', t.type);
+
+        const sign = t.type === 'income' ? '+' : '-';
+        const walletType = normalizeWallet(t);
+        const isCopay = t.isCopay;
+
+        let walletBadge = `<span class="item-wallet-badge spending"><i class="fa-solid fa-wallet"></i> บัญชีใช้จ่าย</span>`;
+        if (t.type === 'income' && !['allocate_spending', 'transfer_savings', 'topup_gwallet', 'paotang_grant'].includes(t.category)) {
+            walletBadge = `<span class="item-wallet-badge income"><i class="fa-solid fa-arrow-trend-up"></i> รายรับรวม</span>`;
+        } else if (isCopay) {
+            walletBadge = `<span class="item-wallet-badge copay"><i class="fa-solid fa-handshake-angle"></i> สิทธิ์ 60/40</span>`;
+        } else if (walletType === 'reserve') {
+            walletBadge = `<span class="item-wallet-badge reserve"><i class="fa-solid fa-coins"></i> เงินสำรอง</span>`;
+        } else if (walletType === 'savings') {
+            walletBadge = `<span class="item-wallet-badge savings"><i class="fa-solid fa-piggy-bank"></i> บัญชีเงินเก็บ</span>`;
+        } else if (walletType === 'gwallet') {
+            walletBadge = `<span class="item-wallet-badge gwallet"><i class="fa-solid fa-credit-card"></i> G-Wallet</span>`;
+        } else if (walletType === 'grant') {
+            walletBadge = `<span class="item-wallet-badge grant"><i class="fa-solid fa-gift"></i> สิทธิ์รัฐ</span>`;
+        }
+
+        item.innerHTML = `
+        <div class="item-info">
+            <div style="display: flex; align-items: center;">
+                <span class="item-desc">${t.description}</span>
+                ${walletBadge}
+            </div>
+            <span class="item-cat">${getCategoryName(t.category)}</span>
+        </div>
+        <div class="item-right">
+            <span class="item-amount">${sign}${formatMoey(t.amount).replace('฿', '')}</span>
+            <button class="btn-delete" onclick="deleteTransaction('${t.id}')">
+                <i class="fa-solid fa-trash-can"></i>
+            </button>
+        </div>
+        `;
+        calendarDayListEl.appendChild(item);
+    });
+}
+
+// ฟังก์ชันสลับมุมมอง List / Calendar
+function setViewMode(mode) {
+    currentViewMode = mode;
+    if (mode === 'list') {
+        if (btnViewList) btnViewList.classList.add('active');
+        if (btnViewCalendar) btnViewCalendar.classList.remove('active');
+        if (listEl) listEl.style.display = 'block';
+        if (calendarViewEl) calendarViewEl.style.display = 'none';
+        renderTransactions();
+    } else {
+        if (btnViewCalendar) btnViewCalendar.classList.add('active');
+        if (btnViewList) btnViewList.classList.remove('active');
+        if (listEl) listEl.style.display = 'none';
+        if (calendarViewEl) calendarViewEl.style.display = 'flex';
+        renderCalendarView();
+    }
+}
+
+// 21. ฟังก์ชันเริ่มต้นรันโปรแกรม
 function init() {
     updateMonthFilterOptions();
-    renderTransactions();
+    if (currentViewMode === 'list') {
+        renderTransactions();
+    } else {
+        renderCalendarView();
+    }
     updateDashboard();
 }
 
@@ -645,16 +820,40 @@ if (btnQuickTopup) btnQuickTopup.addEventListener('click', quickTopupGWallet);
 if (btnAllocateSpending) btnAllocateSpending.addEventListener('click', allocateSpending);
 if (btnAllocateSavings) btnAllocateSavings.addEventListener('click', allocateSavings);
 
+if (btnViewList) {
+    btnViewList.addEventListener('click', () => setViewMode('list'));
+}
+if (btnViewCalendar) {
+    btnViewCalendar.addEventListener('click', () => setViewMode('calendar'));
+}
+if (btnCloseDayDetails) {
+    btnCloseDayDetails.addEventListener('click', () => {
+        if (calendarDayDetailsEl) calendarDayDetailsEl.style.display = 'none';
+        document.querySelectorAll('.calendar-cell').forEach(c => c.classList.remove('active-day'));
+        selectedCalendarDay = null;
+    });
+}
+
 monthFilterEl.addEventListener('change', (e) => {
     selectedMonthKey = e.target.value;
-    renderTransactions();
+    if (currentViewMode === 'list') {
+        renderTransactions();
+    } else {
+        renderCalendarView();
+        if (calendarDayDetailsEl) calendarDayDetailsEl.style.display = 'none';
+    }
     updateDashboard();
 });
 
 if (walletFilterEl) {
     walletFilterEl.addEventListener('change', (e) => {
         selectedWallet = e.target.value;
-        renderTransactions();
+        if (currentViewMode === 'list') {
+            renderTransactions();
+        } else {
+            renderCalendarView();
+            if (calendarDayDetailsEl) calendarDayDetailsEl.style.display = 'none';
+        }
     });
 }
 
@@ -679,4 +878,5 @@ document.querySelectorAll('input[name="type"]').forEach(radio => {
 // รันโปรแกรมครั้งแรก
 init();
 updateFormTypeVisibility();
+
 
