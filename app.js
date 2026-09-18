@@ -162,17 +162,13 @@ const DEFAULT_WALLETS = [
     }
 ];
 
-let wallets = JSON.parse(localStorage.getItem('custom_wallets')) || DEFAULT_WALLETS;
+// ดึงกระเป๋าจาก LocalStorage (ถ้าเคยลบหมดจนเป็น [] ก็จะคงเป็น [] ตามที่ผู้ใช้ต้องการ)
+let savedWalletsRaw = localStorage.getItem('custom_wallets');
+let wallets = savedWalletsRaw !== null ? JSON.parse(savedWalletsRaw) : DEFAULT_WALLETS;
 
-// ตรวจสอบและ Merge ค่าเริ่มต้นถ้ามีฟิลด์ใหม่เพิ่มเข้ามา
-wallets = DEFAULT_WALLETS.map(def => {
-    const existing = wallets.find(w => w.id === def.id);
-    return existing ? { ...def, ...existing } : def;
-}).concat(wallets.filter(w => !DEFAULT_WALLETS.some(def => def.id === w.id)));
-
-// ให้แน่ใจว่าต้องมีกระเป๋าหลักอย่างน้อย 1 ใบ
-if (!wallets.some(w => w.isPrimary)) {
-    if (wallets.length > 0) wallets[0].isPrimary = true;
+// ให้แน่ใจว่าถ้ามีกระเป๋าเหลืออยู่ ต้องมีกระเป๋าหลักอย่างน้อย 1 ใบ
+if (wallets.length > 0 && !wallets.some(w => w.isPrimary)) {
+    wallets[0].isPrimary = true;
 }
 
 function saveWallets() {
@@ -184,6 +180,7 @@ function getWallet(id) {
 }
 
 function getPrimaryWallet() {
+    if (wallets.length === 0) return null;
     return wallets.find(w => w.isPrimary) || wallets[0];
 }
 
@@ -195,7 +192,6 @@ function setPrimaryWallet(id) {
         w.isPrimary = (w.id === id);
     });
 
-    // หากกระเป๋าหลักถูกล็อกอยู่ ให้ปลดล็อกอัตโนมัติ
     if (target.isLocked) {
         target.isLocked = false;
     }
@@ -334,7 +330,7 @@ function getWalletBalance(walletId) {
         return incomeGrant - expenseGrant;
     }
 
-    // สำหรับกระเป๋าเงินอื่นๆ (Custom Wallets)
+    // กระเป๋าเงินกำหนดเอง
     const customIncome = transactions
         .filter(t => t.type === 'income' && t.wallet === walletId)
         .reduce((acc, t) => acc + t.amount, 0);
@@ -352,6 +348,20 @@ function getWalletBalance(walletId) {
 function renderWalletCards() {
     if (!walletsGridEl) return;
     walletsGridEl.innerHTML = '';
+
+    if (wallets.length === 0) {
+        walletsGridEl.innerHTML = `
+            <div class="card card-wallet" style="grid-column: 1 / -1; text-align: center; padding: 2rem 1.5rem; border-style: dashed; background: rgba(255, 255, 255, 0.02); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px;">
+                <i class="fa-solid fa-wallet" style="font-size: 2.2rem; color: var(--text-secondary); opacity: 0.5;"></i>
+                <h3 style="color: var(--text-primary); font-size: 1.05rem; margin: 0;">ยังไม่มีกระเป๋าเงินในระบบ</h3>
+                <p style="color: var(--text-secondary); font-size: 0.8rem; margin: 0;">คุณสามารถสร้างกระเป๋าเงินใหม่เพื่อเริ่มบันทึกและจัดสรรรายรับ-รายจ่ายได้ทันที</p>
+                <button type="button" class="btn-manage-wallets" style="margin-top: 6px;" onclick="if (btnManageWallets) btnManageWallets.click();">
+                    <i class="fa-solid fa-plus-circle"></i> เพิ่มกระเป๋าเงินใหม่
+                </button>
+            </div>
+        `;
+        return;
+    }
 
     const spentToday = getTodayGrantExpense();
     const remainingQuotaToday = Math.max(0, DAILY_GRANT_LIMIT - spentToday);
@@ -423,9 +433,22 @@ function renderWalletCards() {
 
 function renderWalletFormSelector() {
     if (!walletSelectorListEl) return;
-    const primary = getPrimaryWallet();
-    const currentChecked = document.querySelector('input[name="wallet"]:checked')?.value || primary?.id || 'spending';
     walletSelectorListEl.innerHTML = '';
+
+    if (wallets.length === 0) {
+        walletSelectorListEl.innerHTML = `
+            <div style="width: 100%; text-align: center; padding: 0.75rem; background: rgba(244, 63, 94, 0.08); border: 1px dashed rgba(244, 63, 94, 0.35); border-radius: 12px; color: #fda4af; font-size: 0.82rem; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                <span><i class="fa-solid fa-circle-exclamation"></i> ยังไม่มีกระเป๋าเงินในระบบ</span>
+                <button type="button" class="btn-manage-wallets" style="padding: 2px 8px; font-size: 0.72rem;" onclick="if (btnManageWallets) btnManageWallets.click();">
+                    + เพิ่มกระเป๋า
+                </button>
+            </div>
+        `;
+        return;
+    }
+
+    const primary = getPrimaryWallet();
+    const currentChecked = document.querySelector('input[name="wallet"]:checked')?.value || primary?.id || wallets[0]?.id;
 
     wallets.forEach(w => {
         const item = document.createElement('div');
@@ -462,22 +485,23 @@ function renderWalletFormSelector() {
         walletSelectorListEl.appendChild(item);
     });
 
-    // ตัวเลือกสิทธิ์ 60/40
-    const copayItem = document.createElement('div');
-    copayItem.className = 'wallet-radio-item';
-    copayItem.innerHTML = `
-        <input type="radio" id="form-wallet-copay" name="wallet" value="copay" ${currentChecked === 'copay' ? 'checked' : ''}>
-        <label for="form-wallet-copay" class="wallet-radio-label">
-            <i class="fa-solid fa-handshake-angle"></i> สิทธิ์ 60/40
-        </label>
-    `;
-    walletSelectorListEl.appendChild(copayItem);
+    // ตัวเลือกสิทธิ์ 60/40 (แสดงถ้ามี gwallet หรือ grant อยู่)
+    if (wallets.some(w => w.id === 'gwallet' || w.id === 'grant')) {
+        const copayItem = document.createElement('div');
+        copayItem.className = 'wallet-radio-item';
+        copayItem.innerHTML = `
+            <input type="radio" id="form-wallet-copay" name="wallet" value="copay" ${currentChecked === 'copay' ? 'checked' : ''}>
+            <label for="form-wallet-copay" class="wallet-radio-label">
+                <i class="fa-solid fa-handshake-angle"></i> สิทธิ์ 60/40
+            </label>
+        `;
+        walletSelectorListEl.appendChild(copayItem);
+    }
 
     walletSelectorListEl.querySelectorAll('input[name="wallet"]').forEach(radio => {
         radio.addEventListener('change', updateCopayPreview);
     });
 
-    // หากตัวที่เลือกอยู่ปัจจุบันถูกล็อก ให้เลื่อนไปเลือกกระเป๋าหลักหรือกระเป๋าที่ยังเปิดอยู่
     const selectedObj = getWallet(currentChecked);
     if (selectedObj && selectedObj.isLocked) {
         const available = wallets.find(w => w.isPrimary && !w.isLocked) || wallets.find(w => !w.isLocked);
@@ -536,6 +560,16 @@ function renderModalWalletList() {
     if (!modalWalletList) return;
     modalWalletList.innerHTML = '';
 
+    if (wallets.length === 0) {
+        modalWalletList.innerHTML = `
+            <li style="text-align: center; color: var(--text-secondary); padding: 1.5rem; font-size: 0.85rem;">
+                <i class="fa-solid fa-inbox" style="font-size: 1.8rem; margin-bottom: 0.4rem; display: block; opacity: 0.4;"></i>
+                ยังไม่มีกระเป๋าเงินในระบบ (กรุณาเพิ่มกระเป๋าเงินใหม่ด้านบน)
+            </li>
+        `;
+        return;
+    }
+
     wallets.forEach(w => {
         const balance = getWalletBalance(w.id);
         const li = document.createElement('li');
@@ -544,8 +578,8 @@ function renderModalWalletList() {
         const leftDiv = document.createElement('div');
         leftDiv.className = 'wallet-item-left';
 
-        let primaryTagHtml = w.isPrimary
-            ? `<span class="wallet-status-tag primary" title="กระเป๋าหลักของระบบ"><i class="fa-solid fa-star"></i> กระเป๋าหลัก</span>`
+        let primaryTagHtml = w.isPrimary 
+            ? `<span class="wallet-status-tag primary" title="กระเป๋าหลักของระบบ"><i class="fa-solid fa-star"></i> กระเป๋าหลัก</span>` 
             : '';
 
         leftDiv.innerHTML = `
@@ -573,7 +607,7 @@ function renderModalWalletList() {
         balSpan.innerText = formatMoney(balance);
         rightDiv.appendChild(balSpan);
 
-        // Set Primary Button (if not already primary)
+        // Set Primary Button
         if (!w.isPrimary) {
             const setPrimaryBtn = document.createElement('button');
             setPrimaryBtn.type = 'button';
@@ -602,16 +636,14 @@ function renderModalWalletList() {
         editBtn.addEventListener('click', () => editWallet(w.id));
         rightDiv.appendChild(editBtn);
 
-        // Delete Button (Available for any wallet as long as more than 1 wallet exists)
-        if (wallets.length > 1) {
-            const delBtn = document.createElement('button');
-            delBtn.type = 'button';
-            delBtn.className = 'btn-wallet-tool btn-delete';
-            delBtn.title = 'ลบกระเป๋าเงินนี้';
-            delBtn.innerHTML = '<i class="fa-solid fa-trash-can"></i>';
-            delBtn.addEventListener('click', () => deleteWallet(w.id, w.name));
-            rightDiv.appendChild(delBtn);
-        }
+        // Delete Button (สามารถลบกระเป๋าได้ทุกใบตามความต้องการ)
+        const delBtn = document.createElement('button');
+        delBtn.type = 'button';
+        delBtn.className = 'btn-wallet-tool btn-delete';
+        delBtn.title = 'ลบกระเป๋าเงินนี้';
+        delBtn.innerHTML = '<i class="fa-solid fa-trash-can"></i>';
+        delBtn.addEventListener('click', () => deleteWallet(w.id, w.name));
+        rightDiv.appendChild(delBtn);
 
         li.appendChild(leftDiv);
         li.appendChild(rightDiv);
@@ -627,7 +659,7 @@ function addOrUpdateWallet(e) {
     const color = newWalletColorEl.value;
     const desc = newWalletDescEl.value.trim();
     const isPrimary = newWalletPrimaryEl.checked;
-    const isLocked = isPrimary ? false : newWalletLockedEl.checked; // ถ้าเป็นกระเป๋าหลัก ห้ามล็อก
+    const isLocked = isPrimary ? false : newWalletLockedEl.checked;
 
     if (!name) return;
 
@@ -654,7 +686,9 @@ function addOrUpdateWallet(e) {
         }
 
         const newId = 'wallet_' + Date.now();
-        if (isPrimary) {
+        const shouldBePrimary = isPrimary || wallets.length === 0;
+
+        if (shouldBePrimary) {
             wallets.forEach(w => w.isPrimary = false);
         }
 
@@ -664,8 +698,8 @@ function addOrUpdateWallet(e) {
             icon,
             color,
             desc: desc || 'กระเป๋าเงินพิเศษ',
-            isPrimary: isPrimary || (wallets.length === 0),
-            isLocked,
+            isPrimary: shouldBePrimary,
+            isLocked: shouldBePrimary ? false : isLocked,
             isSystem: false
         });
         alert(`🎉 เพิ่มกระเป๋าเงิน "${name}" เรียบร้อยแล้ว!`);
@@ -727,41 +761,35 @@ function toggleLockWallet(id) {
 }
 
 function deleteWallet(id, name) {
-    if (wallets.length <= 1) {
-        alert('⛔ ไม่สามารถลบได้ เนื่องจากต้องมีกระเป๋าเงินอย่างน้อย 1 ใบในระบบครับ');
-        return;
-    }
-
     const targetWallet = wallets.find(w => w.id === id);
     if (!targetWallet) return;
 
-    // หากกระเป๋าที่จะลบคือกระเป๋าหลัก ให้หากระเป๋าใบถัดไปมารับหน้าที่เป็นกระเป๋าหลักแทน
-    let newPrimary = null;
-    if (targetWallet.isPrimary) {
-        newPrimary = wallets.find(w => w.id !== id);
-    } else {
-        newPrimary = getPrimaryWallet();
-    }
+    const remainingWallets = wallets.filter(w => w.id !== id);
+    let confirmMsg = '';
 
-    let confirmMsg = `คุณต้องการลบกระเป๋าเงิน "${name}" ใช่หรือไม่?\n\n*รายการประวัติและยอดเงินคงเหลือของกระเป๋านี้ จะถูกโอนย้ายไปยังกระเป๋าหลัก ("${newPrimary.name}") โดยอัตโนมัติ เพื่อป้องกันข้อมูลสูญหาย`;
-    if (!confirm(confirmMsg)) return;
+    if (remainingWallets.length > 0) {
+        let newPrimary = targetWallet.isPrimary ? remainingWallets[0] : getPrimaryWallet();
+        confirmMsg = `คุณต้องการลบกระเป๋าเงิน "${name}" ใช่หรือไม่?\n\n*รายการประวัติและยอดเงินคงเหลือของกระเป๋านี้ จะถูกโอนย้ายไปยังกระเป๋า ("${newPrimary.name}") โดยอัตโนมัติ เพื่อป้องกันข้อมูลสูญหาย`;
+        if (!confirm(confirmMsg)) return;
 
-    // ตั้งกระเป๋าหลักใหม่ (ถ้าลบกระเป๋าหลักเดิม)
-    if (targetWallet.isPrimary && newPrimary) {
-        newPrimary.isPrimary = true;
-        newPrimary.isLocked = false;
-    }
-
-    // ย้ายรายการของกระเป๋าที่ถูกลบไปเข้ากระเป๋าหลัก
-    transactions.forEach(t => {
-        if (t.wallet === id) {
-            t.wallet = newPrimary.id;
+        if (targetWallet.isPrimary && newPrimary) {
+            newPrimary.isPrimary = true;
+            newPrimary.isLocked = false;
         }
-    });
-    updateLocalStorage();
 
-    // ลบกระเป๋าออกจากรายการ
-    wallets = wallets.filter(w => w.id !== id);
+        // ย้ายรายการประวัติของกระเป๋าที่ลบไปยังกระเป๋าที่ยังอยู่
+        transactions.forEach(t => {
+            if (t.wallet === id) {
+                t.wallet = newPrimary.id;
+            }
+        });
+        updateLocalStorage();
+    } else {
+        confirmMsg = `คุณต้องการลบกระเป๋าเงิน "${name}" ใช่หรือไม่?\n\n⚠️ นี่คือกระเป๋าเงินใบสุดท้ายในระบบ หากลบจะไม่มีกระเป๋าเงินเหลืออยู่ (สามารถสร้างใหม่ได้ทุกเมื่อ)`;
+        if (!confirm(confirmMsg)) return;
+    }
+
+    wallets = remainingWallets;
     saveWallets();
 
     renderWalletCards();
@@ -771,7 +799,7 @@ function deleteWallet(id, name) {
     renderTransactions();
     updateDashboard();
 
-    alert(`🗑️ ลบกระเป๋าเงิน "${name}" เรียบร้อยแล้ว พร้อมโอนย้ายข้อมูลไปยัง "${newPrimary.name}"`);
+    alert(`🗑️ ลบกระเป๋าเงิน "${name}" เรียบร้อยแล้ว!`);
 }
 
 function quickCustomDeposit(walletId, walletName) {
@@ -1021,10 +1049,16 @@ function updateMonthFilterOptions() {
 function addTransaction(e) {
     e.preventDefault();
 
+    if (wallets.length === 0) {
+        alert('⚠️ ยังไม่มีกระเป๋าเงินในระบบ กรุณากดปุ่ม "จัดการกระเป๋าเงิน" เพื่อเพิ่มกระเป๋าเงินก่อนทำรายการครับ');
+        if (btnManageWallets) btnManageWallets.click();
+        return;
+    }
+
     const type = document.querySelector('input[name="type"]:checked').value;
     const walletChecked = document.querySelector('input[name="wallet"]:checked');
     const primary = getPrimaryWallet();
-    const wallet = walletChecked ? walletChecked.value : (primary ? primary.id : 'spending');
+    const wallet = walletChecked ? walletChecked.value : (primary ? primary.id : wallets[0]?.id);
     const description = descriptionEl.value.trim();
     const amount = +amountEl.value;
     const category = categoryEl.value;
