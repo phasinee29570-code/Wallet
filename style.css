@@ -1923,6 +1923,13 @@ select:focus {
     gap: 3px;
 }
 
+.wallet-status-tag.primary {
+    background: rgba(245, 158, 11, 0.2);
+    color: #fbbf24;
+    border: 1px solid rgba(245, 158, 11, 0.45);
+    font-weight: 700;
+}
+
 .wallet-status-tag.active {
     background: rgba(16, 185, 129, 0.15);
     color: #34d399;
@@ -1933,6 +1940,30 @@ select:focus {
     background: rgba(244, 63, 94, 0.15);
     color: #fb7185;
     border: 1px solid rgba(244, 63, 94, 0.3);
+}
+
+.badge-primary-pill {
+    background: rgba(245, 158, 11, 0.25);
+    border: 1px solid rgba(245, 158, 11, 0.5);
+    color: #fde047;
+    font-size: 0.65rem;
+    font-weight: 700;
+    padding: 2px 7px;
+    border-radius: 12px;
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    white-space: nowrap;
+}
+
+.btn-wallet-tool.btn-set-primary {
+    color: #9ca3af;
+}
+
+.btn-wallet-tool.btn-set-primary:hover {
+    background: rgba(245, 158, 11, 0.2);
+    color: #fbbf24;
+    border-color: rgba(245, 158, 11, 0.4);
 }
 
 .wallet-item-right {

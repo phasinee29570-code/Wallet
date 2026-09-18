@@ -112,9 +112,11 @@
                     </div>
 
                     <div class="form-control">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                        <div
+                            style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
                             <label for="category" style="margin-bottom: 0;">หมวดหมู่</label>
-                            <button type="button" id="btn-manage-categories" class="btn-manage-cat" title="จัดการหมวดหมู่">
+                            <button type="button" id="btn-manage-categories" class="btn-manage-cat"
+                                title="จัดการหมวดหมู่">
                                 <i class="fa-solid fa-gear"></i> จัดการหมวดหมู่
                             </button>
                         </div>
@@ -137,10 +139,12 @@
                         <div class="history-controls">
                             <!-- ปุ่มสลับมุมมอง List / Calendar -->
                             <div class="view-toggle-group">
-                                <button type="button" id="btn-view-list" class="btn-view-toggle active" title="มุมมองรายการ">
+                                <button type="button" id="btn-view-list" class="btn-view-toggle active"
+                                    title="มุมมองรายการ">
                                     <i class="fa-solid fa-list-ul"></i> รายการ
                                 </button>
-                                <button type="button" id="btn-view-calendar" class="btn-view-toggle" title="มุมมองปฏิทิน">
+                                <button type="button" id="btn-view-calendar" class="btn-view-toggle"
+                                    title="มุมมองปฏิทิน">
                                     <i class="fa-regular fa-calendar-days"></i> ปฏิทิน
                                 </button>
                             </div>
@@ -176,8 +180,10 @@
                         <!-- กล่องแสดงรายการของวันที่เลือกในปฏิทิน -->
                         <div id="calendar-day-details" class="calendar-day-details" style="display: none;">
                             <div class="day-details-header">
-                                <h4 id="selected-day-title"><i class="fa-regular fa-calendar-check"></i> รายการของวันที่</h4>
-                                <button id="btn-close-day-details" class="btn-close-details"><i class="fa-solid fa-xmark"></i></button>
+                                <h4 id="selected-day-title"><i class="fa-regular fa-calendar-check"></i> รายการของวันที่
+                                </h4>
+                                <button id="btn-close-day-details" class="btn-close-details"><i
+                                        class="fa-solid fa-xmark"></i></button>
                             </div>
                             <ul id="calendar-day-list" class="transaction-list day-sublist"></ul>
                         </div>
@@ -192,9 +198,10 @@
         <div class="modal-card">
             <div class="modal-header">
                 <h3><i class="fa-solid fa-shapes"></i> จัดการหมวดหมู่</h3>
-                <button type="button" id="btn-close-cat-modal" class="btn-close-modal"><i class="fa-solid fa-xmark"></i></button>
+                <button type="button" id="btn-close-cat-modal" class="btn-close-modal"><i
+                        class="fa-solid fa-xmark"></i></button>
             </div>
-            
+
             <div class="modal-body">
                 <!-- ฟอร์มเพิ่มหมวดหมู่ใหม่ -->
                 <form id="new-category-form" class="add-cat-box">
@@ -223,7 +230,8 @@
                             <option value="💼">💼 งานพิเศษ</option>
                             <option value="💳">💳 ค่าบัตร/ผ่อน</option>
                         </select>
-                        <input type="text" id="new-cat-name" placeholder="ชื่อหมวดหมู่ใหม่..." maxlength="30" required autocomplete="off">
+                        <input type="text" id="new-cat-name" placeholder="ชื่อหมวดหมู่ใหม่..." maxlength="30" required
+                            autocomplete="off">
                         <button type="submit" class="btn-add-cat"><i class="fa-solid fa-plus"></i> เพิ่ม</button>
                     </div>
                 </form>
@@ -246,19 +254,22 @@
         <div class="modal-card modal-card-lg">
             <div class="modal-header">
                 <h3><i class="fa-solid fa-wallet"></i> จัดการกระเป๋าเงิน & สถานะการใช้งาน</h3>
-                <button type="button" id="btn-close-wallet-modal" class="btn-close-modal"><i class="fa-solid fa-xmark"></i></button>
+                <button type="button" id="btn-close-wallet-modal" class="btn-close-modal"><i
+                        class="fa-solid fa-xmark"></i></button>
             </div>
-            
+
             <div class="modal-body">
                 <!-- ฟอร์มเพิ่ม / แก้ไขกระเป๋าเงิน -->
                 <form id="wallet-form" class="add-cat-box add-wallet-box">
                     <h4 id="wallet-form-title"><i class="fa-solid fa-plus-circle"></i> เพิ่มกระเป๋าเงินใหม่</h4>
                     <input type="hidden" id="wallet-edit-id" value="">
-                    
+
                     <div class="wallet-form-grid">
                         <div class="wallet-input-group">
                             <label for="new-wallet-name">ชื่อกระเป๋าเงิน</label>
-                            <input type="text" id="new-wallet-name" placeholder="เช่น เงินเก็บท่องเที่ยว, คริปโต, บัตรเครดิต" maxlength="30" required autocomplete="off">
+                            <input type="text" id="new-wallet-name"
+                                placeholder="เช่น เงินเก็บท่องเที่ยว, คริปโต, บัตรเครดิต" maxlength="30" required
+                                autocomplete="off">
                         </div>
 
                         <div class="wallet-input-group">
@@ -300,7 +311,18 @@
 
                         <div class="wallet-input-group full-width">
                             <label for="new-wallet-desc">คำอธิบายสั้นๆ</label>
-                            <input type="text" id="new-wallet-desc" placeholder="เช่น เงินออมสำหรับเที่ยวต่างประเทศสิ้นปี" maxlength="60" autocomplete="off">
+                            <input type="text" id="new-wallet-desc"
+                                placeholder="เช่น เงินออมสำหรับเที่ยวต่างประเทศสิ้นปี" maxlength="60"
+                                autocomplete="off">
+                        </div>
+
+                        <div class="wallet-input-group full-width lock-checkbox-row">
+                            <label class="lock-checkbox-label">
+                                <input type="checkbox" id="new-wallet-primary">
+                                <span class="lock-checkbox-custom" style="color: #fbbf24;"><i
+                                        class="fa-solid fa-star"></i></span>
+                                <span><strong>ตั้งเป็นกระเป๋าหลัก (ใช้งานเริ่มต้นอัตโนมัติ)</strong></span>
+                            </label>
                         </div>
 
                         <div class="wallet-input-group full-width lock-checkbox-row">
@@ -313,8 +335,10 @@
                     </div>
 
                     <div class="wallet-form-buttons">
-                        <button type="submit" id="btn-save-wallet" class="btn-add-cat"><i class="fa-solid fa-check"></i> บันทึกกระเป๋า</button>
-                        <button type="button" id="btn-cancel-edit-wallet" class="btn-cancel-edit" style="display: none;"><i class="fa-solid fa-xmark"></i> ยกเลิก</button>
+                        <button type="submit" id="btn-save-wallet" class="btn-add-cat"><i class="fa-solid fa-check"></i>
+                            บันทึกกระเป๋า</button>
+                        <button type="button" id="btn-cancel-edit-wallet" class="btn-cancel-edit"
+                            style="display: none;"><i class="fa-solid fa-xmark"></i> ยกเลิก</button>
                     </div>
                 </form>
 
