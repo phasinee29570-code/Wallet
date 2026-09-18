@@ -30,67 +30,20 @@
         <!-- Dashboard แสดงยอดเงิน -->
         <section class="dashboard">
             <div class="card card-balance">
-                <h3>ยอดเงินคงเหลือรวมทุกกระเป๋า</h3>
+                <div class="balance-header-row">
+                    <h3>ยอดเงินคงเหลือรวมทุกกระเป๋า</h3>
+                    <button type="button" id="btn-manage-wallets" class="btn-manage-wallets" title="จัดการกระเป๋าเงิน">
+                        <i class="fa-solid fa-wallet"></i> จัดการกระเป๋าเงิน
+                    </button>
+                </div>
                 <h1 id="balance">฿0.00</h1>
             </div>
-            <div class="dashboard-grid wallet-summary-grid-5">
-                <div class="card card-wallet-savings">
-                    <div style="display:flex; justify-content:space-between; align-items:center;">
-                        <h3><i class="fa-solid fa-piggy-bank"></i>บัญชีเงินเก็บ</h3>
-                        <button id="btn-allocate-savings" class="btn-savings-small"
-                            title="กำหนด/โอนเข้าบัญชีเงินเก็บ"><i class="fa-solid fa-plus-circle"></i>
-                            ระบุเงินเก็บ</button>
-                    </div>
-                    <h2 id="savings-balance">฿0.00</h2>
-                    <small style="color: var(--text-secondary); font-size: 0.75rem;">เงินออม / สำรองฉุกเฉิน</small>
-                </div>
-                <div class="card card-wallet-spending">
-                    <div style="display:flex; justify-content:space-between; align-items:center;">
-                        <h3><i class="fa-solid fa-wallet"></i>บัญชีใช้จ่าย</h3>
-                        <button id="btn-allocate-spending" class="btn-allocate-small"
-                            title="กำหนด/เติมงบเข้าบัญชีใช้จ่าย"><i class="fa-solid fa-sliders"></i>
-                            ระบุงบใช้จ่าย</button>
-                    </div>
-                    <h2 id="spending-balance">฿0.00</h2>
-                    <small
-                        style="color: var(--text-secondary); font-size: 0.75rem;">งบที่เราจัดสรรไว้สำหรับใช้ชีวิตประจำวัน</small>
-                </div>
-                <div class="card card-wallet-reserve">
-                    <div style="display:flex; justify-content:space-between; align-items:center;">
-                        <h3><i class="fa-solid fa-coins"></i>เงินสำรอง (คงเหลือ)</h3>
-                    </div>
-                    <h2 id="reserve-balance">฿0.00</h2>
-                    <small
-                        style="color: var(--text-secondary); font-size: 0.75rem;">คงเหลือจากรายรับหลังแบ่งกระเป๋า</small>
-                </div>
-                <div class="card card-wallet-gwallet">
-                    <div style="display:flex; justify-content:space-between; align-items:center;">
-                        <h3><i class="fa-solid fa-money-bill-transfer"></i>G-Wallet</h3>
-                        <button id="btn-quick-topup" class="btn-topup-small" title="เติมเงินเข้า G-Wallet"><i
-                                class="fa-solid fa-plus-circle"></i> เติมเงิน</button>
-                    </div>
-                    <h2 id="gwallet-balance">฿0.00</h2>
-                    <small style="color: var(--text-secondary); font-size: 0.75rem;">เงินเติมในแอปเป๋าตัง (จ่าย
-                        40%)</small>
-                </div>
-                <div class="card card-wallet-grant">
-                    <div style="display:flex; justify-content:space-between; align-items:center;">
-                        <h3><i class="fa-solid fa-gift"></i>สิทธิ์ไทยช่วยไทย</h3>
-                        <button id="btn-claim-grant" class="btn-claim-small" title="กดเพื่อรับสิทธิ์ 1,000 บาท"><i
-                                class="fa-solid fa-gift"></i> รับ 1,000฿</button>
-                    </div>
-                    <h2 id="grant-balance">฿0.00</h2>
-                    <div class="quota-progress-container">
-                        <div class="quota-label">
-                            <span>โควตาวันนี้ (สูงสุด 200฿):</span>
-                            <strong id="today-quota-text">เหลือ ฿200.00</strong>
-                        </div>
-                        <div class="quota-bar">
-                            <div id="today-quota-progress" class="quota-progress" style="width: 0%;"></div>
-                        </div>
-                    </div>
-                </div>
+
+            <!-- กริดแสดงการ์ดกระเป๋าเงินแบบ Dynamic -->
+            <div id="wallets-grid" class="dashboard-grid wallet-summary-grid-5">
+                <!-- การ์ดกระเป๋าเงินจะถูกสร้างและอัปเดตอัตโนมัติจาก JavaScript -->
             </div>
+
             <div class="dashboard-grid">
                 <div class="card card-income">
                     <h3><i class="fa-solid fa-arrow-trend-up"></i>รายรับรวม</h3>
@@ -123,18 +76,8 @@
 
                     <div class="form-control">
                         <label>กระเป๋าเงิน / รูปแบบการชำระ</label>
-                        <div class="wallet-selector wallet-selector-3">
-                            <input type="radio" id="wallet-spending" name="wallet" value="spending" checked>
-                            <label for="wallet-spending" class="btn-wallet wallet-spending-label"><i
-                                    class="fa-solid fa-wallet"></i>บัญชีใช้จ่าย</label>
-
-                            <input type="radio" id="wallet-reserve" name="wallet" value="reserve">
-                            <label for="wallet-reserve" class="btn-wallet wallet-reserve-label"><i
-                                    class="fa-solid fa-coins"></i>เงินสำรอง</label>
-
-                            <input type="radio" id="wallet-copay" name="wallet" value="copay">
-                            <label for="wallet-copay" class="btn-wallet wallet-copay-label"><i
-                                    class="fa-solid fa-handshake-angle"></i>สิทธิ์ 60/40</label>
+                        <div id="wallet-selector-list" class="wallet-selector wallet-selector-dynamic">
+                            <!-- ตัวเลือกกระเป๋าจะถูกสร้างจาก JavaScript -->
                         </div>
                     </div>
 
@@ -169,19 +112,14 @@
                     </div>
 
                     <div class="form-control">
-                        <label for="category">หมวดหมู่</label>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                            <label for="category" style="margin-bottom: 0;">หมวดหมู่</label>
+                            <button type="button" id="btn-manage-categories" class="btn-manage-cat" title="จัดการหมวดหมู่">
+                                <i class="fa-solid fa-gear"></i> จัดการหมวดหมู่
+                            </button>
+                        </div>
                         <select id="category">
-                            <option value="food">🍔 อาหารและเครื่องดื่ม</option>
-                            <option value="shopping">🛍️ ช้อปปิ้ง / ของใช้</option>
-                            <option value="allocate_spending">💵 ระบุ/จัดสรรงบเข้าบัญชีใช้จ่าย</option>
-                            <option value="topup_gwallet">🔄 เติมเงินเข้า G-Wallet</option>
-                            <option value="salary">💰 เงินเดือน / รายได้</option>
-                            <option value="transfer_savings">🏦 โอนเข้าบัญชีเงินเก็บ</option>
-                            <option value="paotang_grant">🎁 เงินสิทธิ์โครงการรัฐ</option>
-                            <option value="transport">🚗 การเดินทาง / ยานพาหนะ</option>
-                            <option value="entertainment">🎮 บันเทิง/ พักผ่อน</option>
-                            <option value="utilities">🏠 บิลค่าหอ / ค่าเน็ต</option>
-                            <option value="other">🏷️ อื่นๆ</option>
+                            <!-- ตัวเลือกหมวดหมู่จะถูกเรนเดอร์แบบไดนามิกจาก JavaScript -->
                         </select>
                     </div>
 
@@ -210,12 +148,7 @@
                                 <!-- ตัวเลือกเดือนจะถูกสร้างอัตโนมัติจาก JS -->
                             </select>
                             <select id="wallet-filter" class="select-wallet">
-                                <option value="all">📁 ทุกกระเป๋า</option>
-                                <option value="spending">💳 บัญชีใช้จ่าย</option>
-                                <option value="reserve">🪙 เงินสำรอง</option>
-                                <option value="savings">🏦 บัญชีเงินเก็บ</option>
-                                <option value="gwallet">👛 G-Wallet</option>
-                                <option value="grant">🎁 สิทธิ์ไทยช่วยไทย</option>
+                                <!-- ตัวเลือกกระเป๋าจะถูกสร้างอัตโนมัติจาก JS -->
                             </select>
                             <button id="export-btn" class="btn-export" title="ดาวน์โหลดเป็นไฟล์ Excel/CSV"><i
                                     class="fa-solid fa-file-excel"></i>Export</button>
@@ -251,6 +184,150 @@
                     </div>
                 </div>
             </aside>
+        </div>
+    </div>
+
+    <!-- Modal จัดการหมวดหมู่ -->
+    <div id="category-modal" class="modal-backdrop" style="display: none;">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-shapes"></i> จัดการหมวดหมู่</h3>
+                <button type="button" id="btn-close-cat-modal" class="btn-close-modal"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            
+            <div class="modal-body">
+                <!-- ฟอร์มเพิ่มหมวดหมู่ใหม่ -->
+                <form id="new-category-form" class="add-cat-box">
+                    <h4><i class="fa-solid fa-plus-circle"></i> เพิ่มหมวดหมู่ใหม่</h4>
+                    <div class="add-cat-row">
+                        <select id="new-cat-icon" class="cat-icon-select" title="เลือกไอคอน / อิโมจิ">
+                            <option value="🏷️">🏷️ ป้าย</option>
+                            <option value="🍔">🍔 อาหาร</option>
+                            <option value="☕">☕ กาแฟ/เครื่องดื่ม</option>
+                            <option value="🛍️">🛍️ ช้อปปิ้ง</option>
+                            <option value="🛒">🛒 ซูเปอร์มาร์เก็ต</option>
+                            <option value="🚗">🚗 เดินทาง</option>
+                            <option value="⛽">⛽ น้ำมัน</option>
+                            <option value="🏠">🏠 ที่พัก/บ้าน</option>
+                            <option value="💡">💡 ค่าน้ำไฟ</option>
+                            <option value="🎮">🎮 บันเทิง/เกม</option>
+                            <option value="🎬">🎬 ดูหนัง/ซีรีส์</option>
+                            <option value="💊">💊 ยา/สุขภาพ</option>
+                            <option value="🏋️">🏋️ ฟิตเนส/กีฬา</option>
+                            <option value="📚">📚 การศึกษา</option>
+                            <option value="🐾">🐾 สัตว์เลี้ยง</option>
+                            <option value="✈️">✈️ ท่องเที่ยว</option>
+                            <option value="🎁">🎁 ของขวัญ</option>
+                            <option value="💰">💰 รายได้/เงินเดือน</option>
+                            <option value="📈">📈 ลงทุน</option>
+                            <option value="💼">💼 งานพิเศษ</option>
+                            <option value="💳">💳 ค่าบัตร/ผ่อน</option>
+                        </select>
+                        <input type="text" id="new-cat-name" placeholder="ชื่อหมวดหมู่ใหม่..." maxlength="30" required autocomplete="off">
+                        <button type="submit" class="btn-add-cat"><i class="fa-solid fa-plus"></i> เพิ่ม</button>
+                    </div>
+                </form>
+
+                <!-- รายการหมวดหมู่ทั้งหมด -->
+                <div class="cat-list-container">
+                    <h4><i class="fa-solid fa-list"></i> หมวดหมู่ทั้งหมด</h4>
+                    <div class="cat-scroll-box">
+                        <ul id="modal-category-list" class="modal-cat-list">
+                            <!-- รายการหมวดหมู่จะถูกเรนเดอร์จาก JavaScript -->
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal จัดการกระเป๋าเงิน -->
+    <div id="wallet-modal" class="modal-backdrop" style="display: none;">
+        <div class="modal-card modal-card-lg">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-wallet"></i> จัดการกระเป๋าเงิน & สถานะการใช้งาน</h3>
+                <button type="button" id="btn-close-wallet-modal" class="btn-close-modal"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            
+            <div class="modal-body">
+                <!-- ฟอร์มเพิ่ม / แก้ไขกระเป๋าเงิน -->
+                <form id="wallet-form" class="add-cat-box add-wallet-box">
+                    <h4 id="wallet-form-title"><i class="fa-solid fa-plus-circle"></i> เพิ่มกระเป๋าเงินใหม่</h4>
+                    <input type="hidden" id="wallet-edit-id" value="">
+                    
+                    <div class="wallet-form-grid">
+                        <div class="wallet-input-group">
+                            <label for="new-wallet-name">ชื่อกระเป๋าเงิน</label>
+                            <input type="text" id="new-wallet-name" placeholder="เช่น เงินเก็บท่องเที่ยว, คริปโต, บัตรเครดิต" maxlength="30" required autocomplete="off">
+                        </div>
+
+                        <div class="wallet-input-group">
+                            <label for="new-wallet-icon">ไอคอน</label>
+                            <select id="new-wallet-icon" class="cat-icon-select" title="เลือกไอคอน">
+                                <option value="fa-solid fa-wallet">💳 กระเป๋าเงิน</option>
+                                <option value="fa-solid fa-piggy-bank">🐷 กระปุกออมสิน</option>
+                                <option value="fa-solid fa-coins">🪙 เหรียญสำรอง</option>
+                                <option value="fa-solid fa-money-bill-wave">💵 เงินสด</option>
+                                <option value="fa-solid fa-credit-card">💳 บัตรเครดิต/เดบิต</option>
+                                <option value="fa-solid fa-plane">✈️ ค่าเดินทาง/ท่องเที่ยว</option>
+                                <option value="fa-solid fa-house">🏠 ผ่อนบ้าน/ที่พัก</option>
+                                <option value="fa-solid fa-car">🚗 ผ่อนรถ/ซ่อมรถ</option>
+                                <option value="fa-solid fa-chart-line">📈 กองทุน/หุ้น</option>
+                                <option value="fa-solid fa-bitcoin-sign">₿ คริปโต</option>
+                                <option value="fa-solid fa-graduation-cap">🎓 การศึกษา/พัฒนาตนเอง</option>
+                                <option value="fa-solid fa-heart-pulse">🩺 สุขภาพ/ประกัน</option>
+                                <option value="fa-solid fa-shield-heart">🛡️ กองทุนฉุกเฉิน</option>
+                                <option value="fa-solid fa-gift">🎁 ของขวัญ/รางวัล</option>
+                                <option value="fa-solid fa-gamepad">🎮 งานอดิเรก/บันเทิง</option>
+                                <option value="fa-solid fa-bag-shopping">🛍️ ช้อปปิ้ง</option>
+                            </select>
+                        </div>
+
+                        <div class="wallet-input-group">
+                            <label for="new-wallet-color">ธีมสีประจำกระเป๋า</label>
+                            <select id="new-wallet-color" class="cat-icon-select" title="เลือกสี">
+                                <option value="indigo">🟣 Indigo (ม่วงคราม)</option>
+                                <option value="emerald">🟢 Emerald (เขียวมรกต)</option>
+                                <option value="amber">🟡 Amber (เหลืองทอง)</option>
+                                <option value="cyan">🔵 Cyan (ฟ้าสดใส)</option>
+                                <option value="rose">🔴 Rose (แดงกุหลาบ)</option>
+                                <option value="pink">🌸 Pink (ชมพูหวาน)</option>
+                                <option value="purple">🔮 Purple (ม่วงเข้ม)</option>
+                                <option value="orange">🟠 Orange (ส้มอิฐ)</option>
+                                <option value="teal">🌊 Teal (เขียวน้ำทะเล)</option>
+                            </select>
+                        </div>
+
+                        <div class="wallet-input-group full-width">
+                            <label for="new-wallet-desc">คำอธิบายสั้นๆ</label>
+                            <input type="text" id="new-wallet-desc" placeholder="เช่น เงินออมสำหรับเที่ยวต่างประเทศสิ้นปี" maxlength="60" autocomplete="off">
+                        </div>
+
+                        <div class="wallet-input-group full-width lock-checkbox-row">
+                            <label class="lock-checkbox-label">
+                                <input type="checkbox" id="new-wallet-locked">
+                                <span class="lock-checkbox-custom"><i class="fa-solid fa-lock"></i></span>
+                                <span><strong>ล็อกกระเป๋านี้ไว้ (ห้ามนำไปใช้จ่าย/โอนชั่วคราว)</strong></span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="wallet-form-buttons">
+                        <button type="submit" id="btn-save-wallet" class="btn-add-cat"><i class="fa-solid fa-check"></i> บันทึกกระเป๋า</button>
+                        <button type="button" id="btn-cancel-edit-wallet" class="btn-cancel-edit" style="display: none;"><i class="fa-solid fa-xmark"></i> ยกเลิก</button>
+                    </div>
+                </form>
+
+                <!-- รายการกระเป๋าเงินทั้งหมด -->
+                <div class="cat-list-container">
+                    <h4><i class="fa-solid fa-list-check"></i> รายการกระเป๋าเงินทั้งหมด & การควบคุม</h4>
+                    <div class="cat-scroll-box wallet-scroll-box">
+                        <ul id="modal-wallet-list" class="modal-wallet-list">
+                            <!-- รายการกระเป๋าเงินจะถูกเรนเดอร์จาก JavaScript -->
+                        </ul>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
